@@ -41,7 +41,7 @@ defmodule SysHealth.Router do
     |> Enum.at(0)
     |> String.to_float()
 
-    send_resp(conn, 200, Poison.encode!(%{ok: true, load: 1.00 - idle}))
+    send_resp(conn, 200, Poison.encode!(%{ok: true, load: 100 - idle}))
   end
 
   match _ do
