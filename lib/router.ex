@@ -24,6 +24,7 @@ defmodule SysHealth.Router do
         |> List.first()
       end
     )
+    |> Enum.to_list()
 
     send_resp(conn, 200, Poison.encode!(%{ok: true, total: totalmem, used: usedmem, free: freemem}))
   end
@@ -34,7 +35,7 @@ defmodule SysHealth.Router do
     |> String.split("\n")
     |> Enum.at(2)
     |> String.split("  ")
-    |> Enum.at(4)
+    |> Enum.at(3)
 
     send_resp(conn, 200, Poison.encode!(%{ok: true, idle: idle}))
   end
