@@ -14,6 +14,7 @@ defmodule SysHealth.Router do
 
   get "/memory" do
     [totalmem, usedmem, _, _, freemem] = System.cmd("vmstat", ["-s", "-SM"])
+    |> elem(0)
     |> String.split("\n")
     |> Stream.map(
       fn (x) ->
@@ -27,8 +28,19 @@ defmodule SysHealth.Router do
     send_resp(conn, 200, Poison.encode!(%{ok: true, total: totalmem, used: usedmem, free: freemem}))
   end
 
+  get "/load" do
+    idle = System.cmd("top", ["-bn1"])
+    |> elem(0)
+    |> String.split("\n")
+    |> Enum.at(2)
+    |> String.split("  ")
+    |> Enum.at(4)
+
+    send_resp(conn, 200, Poison.encode!(%{ok: true, idle: idle}))
+  end
+
   match _ do
-    send_resp(conn, 400, Poison.encode!(%{"ok": false}))
+    send_resp(conn, 400, Poison.encode!(%{ok: false}))
   end
 
   def handle_errors(conn, %{kind: kind, reason: reason, stack: stack}) do
@@ -36,6 +48,6 @@ defmodule SysHealth.Router do
     IO.inspect reason
     IO.inspect stack
 
-    send_resp(conn, conn.status, Poison.encode!(%{"ok": false}))
+    send_resp(conn, conn.status, Poison.encode!(%{ok: false}))
   end
 end
