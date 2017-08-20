@@ -13,7 +13,7 @@ defmodule SysHealth.Router do
   plug :dispatch
 
   get "/memory" do
-    [totalmem, usedmem, _, _, freemem] = System.cmd("vmstat", ["-s", "-SM"])
+    [totalmem, usedmem, _, _, freemem | _] = System.cmd("vmstat", ["-s", "-SM"])
     |> elem(0)
     |> String.split("\n")
     |> Stream.map(
@@ -34,7 +34,7 @@ defmodule SysHealth.Router do
     |> elem(0)
     |> String.split("\n")
     |> Enum.at(2)
-    |> String.split("  ")
+    |> String.split(", ")
     |> Enum.at(3)
 
     send_resp(conn, 200, Poison.encode!(%{ok: true, idle: idle}))
