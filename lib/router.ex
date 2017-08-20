@@ -22,7 +22,13 @@ defmodule SysHealth.Router do
         |> String.trim()
         |> String.split()
         |> List.first()
-        |> String.to_integer()
+        |> (fn (i) ->
+            if i do
+              String.to_integer(i)
+            else
+              i
+            end
+          end).()
       end
     )
     |> Enum.to_list()
