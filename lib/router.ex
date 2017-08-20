@@ -22,11 +22,12 @@ defmodule SysHealth.Router do
         |> String.trim()
         |> String.split()
         |> List.first()
+        |> String.to_integer()
       end
     )
     |> Enum.to_list()
 
-    send_resp(conn, 200, Poison.encode!(%{ok: true, total: totalmem, used: usedmem, free: freemem}))
+    send_resp(conn, 200, Poison.encode!(%{ok: true, unit: "M", total: totalmem, used: usedmem, free: freemem}))
   end
 
   get "/load" do
@@ -36,8 +37,11 @@ defmodule SysHealth.Router do
     |> Enum.at(2)
     |> String.split(", ")
     |> Enum.at(3)
+    |> String.split()
+    |> Enum.at(0)
+    |> String.to_float()
 
-    send_resp(conn, 200, Poison.encode!(%{ok: true, idle: idle}))
+    send_resp(conn, 200, Poison.encode!(%{ok: true, load: 1.00 - idle}))
   end
 
   match _ do
